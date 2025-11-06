@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="DTOs\" />
+    <Folder Include="ApplicationServices\" />
+    <Folder Include="Implementation\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BackEnd.Domin\BackEnd.Domin.csproj" />
+    <ProjectReference Include="..\BackEnd.Infrastructure\BackEnd.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
