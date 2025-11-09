@@ -14,7 +14,7 @@
 If you discover a security vulnerability within this project, **please do not post it publicly**.  
 Instead, report it responsibly by following these steps:
 
-1. Send an email to **securty omarmahamadomd@gmail.com** (replace with your real email).  
+1. Send an email to **securty omarmahamadomd@gmail.com**
 2. Include as many details as possible:  
    - A clear description of the issue  
    - Steps to reproduce it  
