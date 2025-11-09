@@ -15,10 +15,10 @@ namespace BackEnd.Application.ApplicationServices.Autho
                                                                                             // توليد Refresh Token
         Task<Response<Guid>> GetUserIdFromTokenAsync(string token);  // استخراج UserId من token
         ClaimsPrincipal? GetPrincipalFromExpiredToken(string token); // استخراج ClaimsPrincipal حتى لو الـ token منتهي
-        Task<Response> ValidateToken(string token);
+        Task<Response> ValidateTokenAsync(string token);
         Task<Response> LogoutFromAllSessions(Guid userid);
         Task<Response<AuthoResponseDto>> RefreshAccessTokenAsync(string refreshToken);
-        Task<Response> Logout(string refreshToken);
+        Task<Response> LogoutAsync(string refreshToken);
 
 
     }

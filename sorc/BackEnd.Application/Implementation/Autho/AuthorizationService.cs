@@ -4,8 +4,12 @@ using BackEnd.Application.DTOs.AuthoDtos.Request;
 using BackEnd.Application.DTOs.AuthoDtos.Requset;
 using BackEnd.Application.DTOs.Common;
 using BackEnd.Domin.Entity;
+using BackEnd.Domin.Entity.Enums;
+using BackEnd.Domin.ValueObjects;
 using BackEnd.Domin.ValueObjects.ValueObjectsUser;
 using BackEnd.Infrastructure.Interface;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +37,7 @@ namespace BackEnd.Application.Implementation.Autho
 
         }
 
-        public async Task<Response> CheckOtpCode(string code)
+        public async Task<Response> CheckOtpCodeAsync(string code)
         {
             try
             {
@@ -67,43 +71,177 @@ namespace BackEnd.Application.Implementation.Autho
             }
         }
 
-        public Task<Response> EmailVerifiedAsync(Guid Token)
+        public async Task<Response> EmailVerifiedAsync(Guid Token)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var exit = await _unitOfWork.Repository<EmailVerificationToken>().GetItemAsync(o => o.Token == Token,
+                include: i => i.Include(i => i.User));
+                if (exit is null)
+                    return ResponseFactory.NotFound();
+
+                if (exit.IsValid())
+                    return ResponseFactory.AlreadyExists("this token not valid ");
+
+                var user = exit.User;
+
+                if (user is null)
+                    return ResponseFactory.NotFound();
+                if (user.IsEmailVerified)
+                    return ResponseFactory.AlreadyExists("this email already virfy");
+                user.VerifyEmail();
+                await _unitOfWork.Repository<User>().UpdateItemAsync(user, user.Id);
+                await _unitOfWork.SaveChangesAsync();
+                return ResponseFactory.Success();
+
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackAsync();
+                return Response.Failure(ex.Message);
+            }
         }
 
-        public Task<Response> ForgotPasswordAsync(string email)
+        public async Task<Response> ForgotPasswordAsync(string email)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var exit = await _unitOfWork.Repository<User>().GetItemAsync(i => i.Email.Value == email);
+
+                if (exit is null) return ResponseFactory.NotFound();
+
+                var otp = OtpCode.Create(exit.Id, exit.Email.Value);
+
+                var body = $@"
+                <h2>Password Reset Request</h2>
+                <p>Your OTP code is: <strong>{otp.Code}</strong></p>
+                <p>This code will expire in 10 minutes.</p>";
+                var sandEmail = new SandEmailDTO
+                {
+                    Body = body,
+                    Subject = "Password Reset OTP",
+                    EmailTo = exit.Email.Value
+                };
+                await _emailService.SendEmailAsync(sandEmail);
+                await _unitOfWork.Repository<OtpCode>().AddItemAsync(otp);
+                await _unitOfWork.SaveChangesAsync();
+                return Response.Success();
+            }
+            catch(Exception ex)
+            {
+                await _unitOfWork.RollbackAsync();
+                return Response.Failure(ex.Message);
+            }
+
         }
 
         public async Task<Response> LoginAsync(LoginRequestDto request)
         {
-            var exit=await _unitOfWork.Repository<User>().GetItemAsync(r=>r.Email.Value==request.Email);
-            if (exit is null)
+            try
             {
-                return ResponseFactory.NotFound();
+                var email = Email.Create(request.Email); // سيرمي exception إذا كان غير صحيح
+                var emailValue = email.Value; // احفظ القيمة في string
+                var exit = await _unitOfWork.Repository<User>().GetItemAsync(r => r.Email.Value== emailValue);
+                if (exit is null)
+                {
+                    return ResponseFactory.NotFound();
+                }
+                var hashpassword = _securtyService.VerifyPassword(exit.Password.Hash, request.Password, exit.Password.Salt);
+                if (!hashpassword)
+                    return Response.Failure("Password or Email is not match ");
+                var authodto = new AuthorizationRequestDto
+                {
+                    email = exit.Email.Value,
+                    name = exit.Name.Value,
+                    id = exit.Id,
+                    Roles = exit.Role.ToString(),
+                };
+                var autho = await _authorization.GenerateTokensAsync(authodto);
+                if (autho is null)
+                    return ResponseFactory.NotFound();
+                return ResponseFactory.Success(autho.Data);
             }
-            var hashpassword = _securtyService.VerifyPassword(exit.Password.Hash, request.Password, exit.Password.Salt);
-            if(!hashpassword)
-                return Response.Failure("Password or Email is not match ");
-            var authodto = new AuthorizationRequestDto
+            catch(Exception ex)
             {
-                email = exit.Email.Value,
-                name = exit.Name.Value,
-                id = exit.Id,
-                Roles = exit.Role.ToString(),
-            };
-            var autho = await _authorization.GenerateTokensAsync(authodto);
-            if (autho is null)
-                return ResponseFactory.NotFound();
-            return ResponseFactory.Success(autho);
+                await _unitOfWork.RollbackAsync();
+                return Response.Failure(ex.Message);
+            }
 
         }
 
-        public Task<Response> RegisterAsync(RegisterRequestDTo request)
+        public async Task<Response> RegisterAsync(RegisterRequestDTo request)
         {
-            throw new NotImplementedException();
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                // ✅ 1. التحقق من صحة البريد أولاً
+                var email = Email.Create(request.Email); // سيرمي exception إذا كان غير صحيح
+                var emailValue = email.Value; // احفظ القيمة في string
+
+                // ✅ 2. البحث باستخدام string value
+                var userExit = await _unitOfWork.Repository<User>()
+                    .GetItemAsync(u => u.Email.Value == emailValue);
+
+                if (userExit is not null)
+                {
+                    return ResponseFactory.AlreadyExists("Email already exists");
+                }
+
+                string imageUrl = "/images/default.png";
+                string? imagePublicId = null;
+
+                if (request.file != null)
+                {
+                    if (request.file.Length > 2 * 1024 * 1024)
+                        return Response.Failure("Image size too large (max 2MB)");
+
+                    var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
+                    var ext = Path.GetExtension(request.file.FileName).ToLower();
+
+                    if (!allowedExtensions.Contains(ext))
+                        return Response.Failure("Invalid image format. Allowed: JPG, PNG, JPEG");
+
+                    using var stream = request.file.OpenReadStream();
+                    var fileResult = await _fileService.UploadAsync(stream, request.file.FileName, DefaultImageType.User);
+
+                    if (!fileResult.IsSuccess)
+                        return Response.Failure("Failed to upload image");
+
+                    imageUrl = fileResult.Data.Url;
+                    imagePublicId = fileResult.Data.PublicId;
+                }
+
+                var hashedPassword = _securtyService.HashPassword(request.Password, out string salt);
+                var add = Address.Create(request.Address.Street, request.Address.City);
+                await _unitOfWork.Repository<Address>().AddItemAsync(add);
+
+                var user = User.Create(
+                    addressId: add.Id,
+                    name: new UserName(request.Name),
+                    phone: new PhoneNumber(request.Phone),
+                    email: email, // ✅ استخدم الـ email object الذي أنشأته في البداية
+                    password: new Password(hashedPassword, salt),
+                    profile: new ProfileImage(imageUrl, imagePublicId),
+                    role: RoleType.user
+                );
+
+                await _unitOfWork.Repository<User>().AddItemAsync(user);
+                await _unitOfWork.CommitAsync();
+                await SandVerifiedTokenToEmailAsync(user.Id, user.Name.Value, request.verify_email_url);
+                await _unitOfWork.SaveChangesAsync();
+
+                return ResponseFactory.Success();
+            }
+            catch (ArgumentException ex) // ✅ لالتقاط أخطاء الـ validation
+            {
+                await _unitOfWork.RollbackAsync();
+                return Response.Failure(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackAsync();
+                return Response.Failure(ex.Message);
+            }
         }
 
         public async Task<Response> ResendVerificationEmailAsync(string Email, string url)
@@ -126,7 +264,7 @@ namespace BackEnd.Application.Implementation.Autho
             }
         }
 
-        public async Task<Response> ResetPasswordAsync(ResetPasswordDto dto)
+        public async Task<Response> ResetPasswordAsync(ResetPasswordRequestDto dto)
         {
             try
             {
@@ -161,7 +299,6 @@ namespace BackEnd.Application.Implementation.Autho
 
         public async Task<Response> SandVerifiedTokenToEmailAsync(Guid userId, string userName, string frontendUrl)
         {
-            await _unitOfWork.BeginTransactionAsync();
             try
             {
                 // ✅ إنشاء توكن جديد

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BackEnd.Application.DTOs.AuthoDtos.Request
 {
-    public class ResetPasswordDto
+    public class ResetPasswordRequestDto
     {
         [Required(ErrorMessage = "New password is required.")]
         public string NewPassword { get; set; }

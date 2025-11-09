@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace BackEnd.Domin.ValueObjects.ValueObjectsUser
 {
+    [Owned]
     public class UserName
     {
         public string Value { get; }

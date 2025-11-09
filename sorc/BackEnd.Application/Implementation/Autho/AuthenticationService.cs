@@ -134,7 +134,7 @@ namespace BackEnd.Application.Implementation.Autho
             return principal;
         }
 
-        public async Task<Response> Logout(string refreshToken)
+        public async Task<Response> LogoutAsync(string refreshToken)
         {
             try
             {
@@ -213,7 +213,7 @@ namespace BackEnd.Application.Implementation.Autho
         }
 
 
-        public async Task<Response> ValidateToken(string token)
+        public async Task<Response> ValidateTokenAsync(string token)
         {
             try
             {
@@ -254,7 +254,7 @@ namespace BackEnd.Application.Implementation.Autho
                 if (autho.ExpireAt < DateTime.UtcNow)
                     return Response<AuthoResponseDto>.Failure("Refresh token has expired. Please log in again.");
 
-                var validateTokenResult = await ValidateToken(autho.Token);
+                var validateTokenResult = await ValidateTokenAsync(autho.Token);
                 if (validateTokenResult.IsSuccess)
                     return Response<AuthoResponseDto>.Success(
                         new AuthoResponseDto

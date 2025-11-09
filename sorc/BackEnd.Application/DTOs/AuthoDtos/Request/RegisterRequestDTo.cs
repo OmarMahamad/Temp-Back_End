@@ -14,6 +14,7 @@ namespace BackEnd.Application.DTOs.AuthoDtos.Request
         public string Name { get; set; }
         public string Password { get; set; }
         public string Email { get; set; }
+        public string Phone { get; set; }
         public IFormFile? file { get; set; }
         [Required]
         public string verify_email_url { get; set; }

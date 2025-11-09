@@ -17,8 +17,8 @@ namespace BackEnd.Application.ApplicationServices.Autho
         Task<Response> EmailVerifiedAsync(Guid Token);
         Task<Response> ResendVerificationEmailAsync(string Email, string url);
         Task<Response> ForgotPasswordAsync(string email);
-        Task<Response> ResetPasswordAsync(ResetPasswordDto dto);
-        Task<Response> CheckOtpCode(string code);
+        Task<Response> ResetPasswordAsync(ResetPasswordRequestDto dto);
+        Task<Response> CheckOtpCodeAsync(string code);
     }
 
 }
