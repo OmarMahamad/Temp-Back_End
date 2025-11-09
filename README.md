@@ -12,7 +12,7 @@
 
 **Ready to use out of the box! Just clone, configure, and deploy.**
 
-[Features](#-features) • [Quick Start](#-quick-start) • [Documentation](#-documentation) • [API Endpoints](#-api-endpoints)
+[Features](#-features) • [Quick Start](#-quick-start) • [Documentation](#-documentation) • [API Endpoints](#-api-endpoints) • [Contact](#-contact)
 
 </div>
 
@@ -445,199 +445,27 @@ This project is licensed under the MIT License.
 
 ---
 
-## 📞 Support
-
-- 📧 **Issues**: [GitHub Issues](https://github.com/OmarMahamad/Temp-Back_End/issues)
-- 📖 **Documentation**: Check Swagger UI at `/swagger`
-
----
-
-## ⭐ Show Your Support
-
-If you find this project helpful, please give it a ⭐ star on GitHub!
-
----
+## 👤 Contact
 
 <div align="center">
 
-**Made with ❤️ using .NET 9.0**
+### Omar Mahamad
 
-**Ready to use. Ready to deploy. Ready to scale.**
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/omar-mahamad-omd)
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/OmarMahamad)
+
+**Full Stack Developer | .NET Specialist | Clean Architecture Enthusiast**
 
 </div>
 
-
-### Design Patterns
-
-- **Repository Pattern** - Data access abstraction
-- **Unit of Work** - Transaction management
-- **Factory Pattern** - Entity creation
-- **Value Objects (DDD)** - Domain modeling
-- **Response Pattern** - Unified API responses
-
----
-
-## 🔒 Security Features
-
-- ✅ **Password Hashing**: PBKDF2 with 100,000 iterations
-- ✅ **JWT Tokens**: Secure token-based authentication
-- ✅ **Refresh Token Rotation**: Enhanced security
-- ✅ **Email Validation**: Domain whitelist and validation
-- ✅ **Input Validation**: Value Objects pattern
-- ✅ **SQL Injection Protection**: EF Core parameterized queries
-- ✅ **CORS**: Configurable cross-origin policies
-
----
-
-## 📊 Response Format
-
-All API responses follow a consistent format:
-
-**Success:**
-```json
-{
-  "isSuccess": true,
-  "message": "Operation completed successfully",
-  "code": 100,
-  "data": { /* response data */ }
-}
-```
-
-**Error:**
-```json
-{
-  "isSuccess": false,
-  "message": "Error message",
-  "code": 401,
-  "errors": { /* validation errors */ }
-}
-```
-
----
-
-## 🗄️ Database
-
-### Running Migrations
-
-```bash
-# Create migration
-dotnet ef migrations add MigrationName --project sorc/BackEnd.Infrastructure
-
-# Apply migrations
-dotnet ef database update --project sorc/BackEnd.Infrastructure
-```
-
-### Database Schema
-
-- **Users** - User accounts and profiles
-- **Addresses** - User addresses
-- **AuthoRepositories** - Refresh tokens
-- **OtpCodes** - OTP codes for password reset
-- **EmailVerificationTokens** - Email verification tokens
-
----
-
-## 📝 Configuration
-
-### Environment Variables (Recommended for Production)
-
-```bash
-JWT__Key=your-secret-key
-JWT__Issuer=YourApp
-JWT__Audience=YourFrontend
-ConnectionStrings__DefaultConnection=Server=...;Database=...
-EmailSettings__SmtpServer=smtp.gmail.com
-EmailSettings__SmtpUser=your-email@gmail.com
-EmailSettings__SmtpPassword=your-app-password
-Cloudinary__CloudName=your-cloud-name
-Cloudinary__ApiKey=your-api-key
-Cloudinary__ApiSecret=your-api-secret
-```
-
----
-
-## 🚀 Deployment
-
-### Deploy to Azure
-
-1. Create Azure App Service
-2. Configure connection strings
-3. Set environment variables
-4. Deploy using Visual Studio or Azure CLI
-
-### Deploy to Docker
-
-```dockerfile
-FROM mcr.microsoft.com/dotnet/aspnet:9.0
-WORKDIR /app
-COPY . .
-ENTRYPOINT ["dotnet", "BackEnd.Api.dll"]
-```
-
----
-
-## 🛠️ Technology Stack
-
-- **.NET 9.0** - Latest .NET framework
-- **ASP.NET Core Web API** - RESTful API
-- **Entity Framework Core 9.0** - ORM
-- **SQL Server** - Database
-- **JWT Bearer** - Authentication
-- **Serilog** - Logging
-- **Swagger/OpenAPI** - API documentation
-- **Cloudinary** - Image hosting
-- **MailKit** - Email delivery
-
----
-
-## 📖 Project Structure
-Temp-Back_End/
-├── sorc/
-│ ├── BackEnd.Api/ # API Layer
-│ ├── BackEnd.Application/ # Business Logic
-│ ├── BackEnd.Domin/ # Domain Models
-│ └── BackEnd.Infrastructure/ # Data Access
-└── README.md
-
-
----
-
-## ⚠️ Important Notes
-
-### Before Production
-
-- [ ] Move JWT key to environment variables
-- [ ] Configure CORS for specific origins
-- [ ] Enable HTTPS only
-- [ ] Set up proper logging
-- [ ] Configure email service
-- [ ] Set up Cloudinary account
-- [ ] Review security settings
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
 ---
 
 ## 📞 Support
 
 - 📧 **Issues**: [GitHub Issues](https://github.com/OmarMahamad/Temp-Back_End/issues)
 - 📖 **Documentation**: Check Swagger UI at `/swagger`
+- 💼 **LinkedIn**: [Omar Mahamad](https://www.linkedin.com/in/omar-mahamad-omd)
+- 🐙 **GitHub**: [@OmarMahamad](https://github.com/OmarMahamad)
 
 ---
 
@@ -649,8 +477,11 @@ If you find this project helpful, please give it a ⭐ star on GitHub!
 
 <div align="center">
 
-**Made with ❤️ using .NET 9.0**
+**Made with ❤️ by [Omar Mahamad](https://github.com/OmarMahamad)**
 
-**Ready to use. Ready to deploy. Ready to scale.**
+**Built with .NET 9.0 • Ready to use • Ready to deploy • Ready to scale**
+
+[![GitHub followers](https://img.shields.io/github/followers/OmarMahamad?style=social)](https://github.com/OmarMahamad)
+[![GitHub stars](https://img.shields.io/github/stars/OmarMahamad/Temp-Back_End?style=social)](https://github.com/OmarMahamad/Temp-Back_End)
 
 </div>
