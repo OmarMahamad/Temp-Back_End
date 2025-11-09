@@ -80,7 +80,7 @@ namespace BackEnd.Application.Implementation.Autho
                 if (exit is null)
                     return ResponseFactory.NotFound();
 
-                if (exit.IsValid())
+                if (!exit.IsValid())
                     return ResponseFactory.AlreadyExists("this token not valid ");
 
                 var user = exit.User;
@@ -89,8 +89,10 @@ namespace BackEnd.Application.Implementation.Autho
                     return ResponseFactory.NotFound();
                 if (user.IsEmailVerified)
                     return ResponseFactory.AlreadyExists("this email already virfy");
+                exit.MarkAsUsed();
                 user.VerifyEmail();
                 await _unitOfWork.Repository<User>().UpdateItemAsync(user, user.Id);
+                await _unitOfWork.Repository<EmailVerificationToken>().UpdateItemAsync(exit, exit.Id);
                 await _unitOfWork.SaveChangesAsync();
                 return ResponseFactory.Success();
 
@@ -106,16 +108,20 @@ namespace BackEnd.Application.Implementation.Autho
         {
             try
             {
-                var exit = await _unitOfWork.Repository<User>().GetItemAsync(i => i.Email.Value == email);
+                var emailv = Email.Create(email); // سيرمي exception إذا كان غير صحيح
+                var emailValue = emailv.Value; // احفظ القيمة في string
+                var exit = await _unitOfWork.Repository<User>().GetItemAsync(i => i.Email.Value == emailValue);
 
                 if (exit is null) return ResponseFactory.NotFound();
 
-                var otp = OtpCode.Create(exit.Id, exit.Email.Value);
+                var code = _securtyService.GenerateOtpCode();
+                var otp = OtpCode.Create(exit.Id, code);
 
                 var body = $@"
                 <h2>Password Reset Request</h2>
                 <p>Your OTP code is: <strong>{otp.Code}</strong></p>
                 <p>This code will expire in 10 minutes.</p>";
+               
                 var sandEmail = new SandEmailDTO
                 {
                     Body = body,
@@ -149,6 +155,9 @@ namespace BackEnd.Application.Implementation.Autho
                 var hashpassword = _securtyService.VerifyPassword(exit.Password.Hash, request.Password, exit.Password.Salt);
                 if (!hashpassword)
                     return Response.Failure("Password or Email is not match ");
+                if (!exit.IsEmailVerified)
+                    return ResponseFactory.Conflict("Please verify your email address before logging in.");
+
                 var authodto = new AuthorizationRequestDto
                 {
                     email = exit.Email.Value,
@@ -320,10 +329,10 @@ namespace BackEnd.Application.Implementation.Autho
 
                 // ✅ رسالة البريد
                 var body = $@"
-        <h2>مرحبًا {userName}</h2>
-        <p>يرجى النقر على الرابط أدناه لتفعيل بريدك الإلكتروني:</p>
-        <a href='{verificationLink}' target='_blank'>تفعيل البريد الإلكتروني</a>
-        <p>سينتهي هذا الرابط خلال ساعتين.</p>";
+                    <h2>مرحبًا {userName}</h2>
+                    <p>يرجى النقر على الرابط أدناه لتفعيل بريدك الإلكتروني:</p>
+                    <a href='{verificationLink}' target='_blank'>تفعيل البريد الإلكتروني</a>
+                    <p>سينتهي هذا الرابط خلال ساعتين.</p>";
 
                 var sandEmail = new SandEmailDTO
                 {

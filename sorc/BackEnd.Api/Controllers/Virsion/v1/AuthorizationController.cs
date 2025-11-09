@@ -35,18 +35,18 @@ namespace BackEnd.Api.Controllers.Virsion.v1
             return HandleResponse(result);
         }
 
-        [HttpPost("email-verify/{token:guid}")]
-        public async Task<IActionResult> EmailVerifiedAsync([FromRoute] Guid Token)
+        [HttpPost("emailverify/{tokenValue:guid}")]
+        public async Task<IActionResult> EmailVerifiedAsync([FromRoute] Guid tokenValue)
         {
-            if (Token == Guid.Empty)
+            if (tokenValue == Guid.Empty)
             {
                 return BadRequest("Invalid token.");
             }
-            var result = await _authorization.EmailVerifiedAsync(Token);
+            var result = await _authorization.EmailVerifiedAsync(tokenValue);
             return HandleResponse(result);
         }
         [HttpPost("resend-verification-email")]
-        public async Task<IActionResult> ResendVerificationEmailAsync([FromForm]ResendVerificationEmailRequestDto requestDto)
+        public async Task<IActionResult> ResendVerificationEmailAsync([FromBody]ResendVerificationEmailRequestDto requestDto)
         {
             if(!ModelState.IsValid)return BadRequest(ModelState);
             var result = await _authorization.ResendVerificationEmailAsync(requestDto.email, requestDto.Url);
@@ -70,7 +70,7 @@ namespace BackEnd.Api.Controllers.Virsion.v1
         [HttpPost("Reset-Password")]
         public async Task<IActionResult> ResetPasswordAsync(ResetPasswordRequestDto requestDto)
         {
-            if (ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
             var result =await _authorization.ResetPasswordAsync(requestDto);
             return HandleResponse(result);
         }
