@@ -14,7 +14,7 @@
 If you discover a security vulnerability within this project, **please do not post it publicly**.  
 Instead, report it responsibly by following these steps:
 
-1. Send an email to **security@[yourdomain].com** (replace with your real email).  
+1. Send an email to **securty omarmahamadomd@gmail.com** (replace with your real email).  
 2. Include as many details as possible:  
    - A clear description of the issue  
    - Steps to reproduce it  
@@ -29,7 +29,7 @@ We will acknowledge your report within **48 hours** and keep you updated through
 في حال اكتشاف ثغرة أمنية في المشروع، يُرجى عدم نشرها بشكل علني.  
 بدلًا من ذلك، يمكنك الإبلاغ عنها عبر البريد الإلكتروني التالي:
 
-📧 **security@[mmdd664414414@gmail].com**
+📧 **securty omarmahamadomd@gmail.com**
 
 يرجى توضيح تفاصيل المشكلة، وخطوات تكرارها، وتأثيرها المحتمل.  
 سيتم الرد خلال **48 ساعة** وسنوافيك بالتحديثات حتى يتم إصلاح الثغرة.
