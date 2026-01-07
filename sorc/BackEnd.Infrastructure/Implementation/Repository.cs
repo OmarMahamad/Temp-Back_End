@@ -21,19 +21,19 @@ namespace BackEnd.Infrastructure.Implementation
         {
             await _dbSet.AddAsync(item);
         }
+        public async Task AddItemRangeAsync(IEnumerable<T> values)
+        {
+            await _dbSet.AddRangeAsync(values);
+        }
         #endregion
 
         #region Delete Item
-        public async Task DeleteItemAsync(Guid id, bool isRange = false)
+        public async Task DeleteItemAsync(Guid id)
         {
             var item = await GetItemByIdAsync(id);
             if (item == null)
                 throw new KeyNotFoundException("العنصر المطلوب حذفه غير موجود.");
-
-            if (isRange)
-                _dbSet.RemoveRange(item);
-            else
-                _dbSet.Remove(item);
+            _dbSet.Remove(item);
         }
 
         public Task DeleteItemAsync(T entity)
@@ -41,24 +41,29 @@ namespace BackEnd.Infrastructure.Implementation
             _dbSet.Remove(entity);
             return Task.CompletedTask;
         }
+        public async Task DeleteItemRangeAsync(IEnumerable<T> values)
+        {
+            _dbSet.RemoveRange(values);
+        }
         #endregion
 
         #region Get Item(s)
         public async Task<T?> GetItemAsync(
             Expression<Func<T, bool>> predicate,
-            Func<IQueryable<T>, IQueryable<T>>? include = null)
+            Func<IQueryable<T>, IQueryable<T>>? include = null,bool AsTracking= false)
         {
             IQueryable<T> query = _dbSet;
 
             if (include != null)
                 query = include(query);
-
+            if (!AsTracking)
+                query = query.AsNoTracking();
             return await query.FirstOrDefaultAsync(predicate);
         }
 
         public async Task<List<T>> GetAllItemsAsync(
             Expression<Func<T, bool>>? predicate = null,
-            Func<IQueryable<T>, IQueryable<T>>? include = null)
+            Func<IQueryable<T>, IQueryable<T>>? include = null, bool AsTracking = false)
         {
             IQueryable<T> query = _dbSet;
 
@@ -67,17 +72,19 @@ namespace BackEnd.Infrastructure.Implementation
 
             if (predicate != null)
                 query = query.Where(predicate);
-
+            if (!AsTracking)
+                query = query.AsNoTracking();
             return await query.ToListAsync();
         }
 
-        public async Task<T?> GetItemByIdAsync(Guid id, Func<IQueryable<T>, IQueryable<T>>? include = null)
+        public async Task<T?> GetItemByIdAsync(Guid id, Func<IQueryable<T>, IQueryable<T>>? include = null,bool AsTracking= false)
         {
             IQueryable<T> query = _dbSet;
 
             if (include != null)
                 query = include(query);
-
+            if (!AsTracking)
+                query = query.AsNoTracking();   
             return await query.FirstOrDefaultAsync(e => EF.Property<Guid>(e, "Id") == id);
         }
         #endregion
@@ -91,6 +98,15 @@ namespace BackEnd.Infrastructure.Implementation
 
             _dbSet.Entry(existing).CurrentValues.SetValues(item);
         }
+        public async Task UpdateItemAsync(T item)
+        {
+            _dbSet.Update(item);
+        }
+
+        public async Task UpdateItemRangeAsync(T item)
+        {
+            _dbSet.UpdateRange(item);
+        }
         #endregion
 
         #region Optional generic queries
@@ -102,13 +118,14 @@ namespace BackEnd.Infrastructure.Implementation
         public async Task<List<TResult>> GetAllItemsAsync<TResult>(
             Expression<Func<T, bool>> predicate,
             Expression<Func<T, TResult>> selector,
-            Func<IQueryable<T>, IQueryable<T>>? include = null)
+            Func<IQueryable<T>, IQueryable<T>>? include = null, bool AsTracking = false)
         {
             IQueryable<T> query = _dbSet;
 
             if (include != null)
                 query = include(query);
-
+            if (!AsTracking)
+                query = query.AsNoTracking();
             return await query.Where(predicate).Select(selector).ToListAsync();
         }
         #endregion

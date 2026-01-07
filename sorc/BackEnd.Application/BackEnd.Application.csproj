@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="CloudinaryDotNet" Version="1.27.8" />
     <PackageReference Include="MailKit" Version="4.14.1" />
+    <PackageReference Include="MediatR" Version="14.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
   </ItemGroup>
 
