@@ -1,5 +1,5 @@
-﻿using BackEnd.Application.Common;
-using BackEnd.Application.DTOs.Common;
+﻿using BackEnd.Application.DTOs.Common;
+using BackEnd.Application.Helper;
 using BackEnd.Application.ModelOptions;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
@@ -10,7 +10,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using static BackEnd.Application.Common.IFileService;
+using static BackEnd.Application.Helper.IFileService;
 
 namespace BackEnd.Application.Implementation.Common
 {

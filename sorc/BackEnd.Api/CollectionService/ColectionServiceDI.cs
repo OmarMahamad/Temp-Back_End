@@ -1,5 +1,5 @@
 ﻿using BackEnd.Application.ApplicationServices.Autho;
-using BackEnd.Application.Common;
+using BackEnd.Application.Helper;
 using BackEnd.Application.Implementation.Autho;
 using BackEnd.Application.Implementation.Common;
 using BackEnd.Infrastructure.Implementation;

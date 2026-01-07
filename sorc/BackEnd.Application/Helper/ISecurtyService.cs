@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BackEnd.Application.Common
+namespace BackEnd.Application.Helper
 {
     public interface ISecurtyService
     {

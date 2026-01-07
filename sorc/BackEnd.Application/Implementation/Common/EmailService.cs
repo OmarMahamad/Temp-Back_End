@@ -1,9 +1,9 @@
-﻿using BackEnd.Application.Common;
-using BackEnd.Application.DTOs.Common;
+﻿using BackEnd.Application.DTOs.Common;
 using Microsoft.Extensions.Configuration;
 using MailKit.Security;
 using MimeKit;
 using SmtpClient = MailKit.Net.Smtp.SmtpClient;
+using BackEnd.Application.Helper;
 
 namespace BackEnd.Application.Implementation.Common
 {

@@ -1,13 +1,16 @@
 ﻿using BackEnd.Application.ApplicationServices.Autho;
-using BackEnd.Application.Common;
+using BackEnd.Application.Common.User;
 using BackEnd.Application.DTOs.AuthoDtos.Request;
 using BackEnd.Application.DTOs.AuthoDtos.Requset;
 using BackEnd.Application.DTOs.Common;
+using BackEnd.Application.Handelr.User;
+using BackEnd.Application.Helper;
 using BackEnd.Domin.Entity;
 using BackEnd.Domin.Entity.Enums;
 using BackEnd.Domin.ValueObjects;
 using BackEnd.Domin.ValueObjects.ValueObjectsUser;
 using BackEnd.Infrastructure.Interface;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Win32;
 using System;
@@ -26,9 +29,10 @@ namespace BackEnd.Application.Implementation.Autho
         private readonly IFileService _fileService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly  IAuthentication _authorization;
-
-        public AuthorizationService(IUnitOfWork unitOfWork, IAuthentication authorization, ISecurtyService securtyService, IEmailService emailService, IFileService fileService)
+        private readonly IMediator _mediator;
+        public AuthorizationService(IUnitOfWork unitOfWork, IAuthentication authorization, ISecurtyService securtyService, IEmailService emailService, IFileService fileService,IMediator mediator)
         {
+            _mediator = mediator;
             _unitOfWork = unitOfWork;
             _authorization = authorization;
             _securtyService = securtyService;
@@ -334,15 +338,15 @@ namespace BackEnd.Application.Implementation.Autho
                     <a href='{verificationLink}' target='_blank'>تفعيل البريد الإلكتروني</a>
                     <p>سينتهي هذا الرابط خلال ساعتين.</p>";
 
-                var sandEmail = new SandEmailDTO
-                {
-                    EmailTo = userEmail,
-                    Subject = "تفعيل البريد الإلكتروني",
-                    Body = body
-                };
+                //var sandEmail = new SandEmailDTO
+                //{
+                //    EmailTo = userEmail,
+                //    Subject = "تفعيل البريد الإلكتروني",
+                //    Body = body
+                //};
 
-                await _emailService.SendEmailAsync(sandEmail);
-
+                //await _emailService.SendEmailAsync(sandEmail);
+                await _mediator.Publish(new UserCommandNotfication(userEmail, "تفعيل البريد الإلكتروني",body));
                 return ResponseFactory.Success();
             }
             catch (Exception ex)

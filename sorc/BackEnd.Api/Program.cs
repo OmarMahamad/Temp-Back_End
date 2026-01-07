@@ -1,6 +1,7 @@
 ﻿using Asp.Versioning;
 using BackEnd.Api.CollectionService;
 using BackEnd.Api.Middleware;
+using BackEnd.Application.Handelr.User;
 using BackEnd.Application.ModelOptions;
 using BackEnd.Infrastructure.DataBase;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -134,7 +135,12 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddHttpContextAccessor();
-
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssemblies(
+        typeof(UserCommandNotficationHandler).Assembly
+    );
+});
 #endregion
 
 var app = builder.Build();
